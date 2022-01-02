@@ -1,0 +1,29 @@
+#btnAddFolder {
+    border-radius: 5px;        /* Adding curves in border ends*/
+    background-color: azure;
+    width: 200px;
+    margin-left: 600px;
+}
+
+#divContainer {
+    border: 1px solid black;
+    display: flex;
+    margin-top: 10px; /* Leaves some space between container and the button at the top*/
+}
+
+.folder {
+    background-color: beige;
+    border-radius: 5px;
+    height: 100px;
+    width: 100px;
+    padding: 10px;   /* Space internally to the inner content*/
+    margin: 10px;
+}
+
+.folder [action]{
+    text-decoration: underline;
+}
+
+div[purpose=name]{
+    margin-top: 50px;
+}
