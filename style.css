@@ -7,8 +7,10 @@
 
 #divContainer {
     border: 1px solid black;
-    display: flex;
+    display: flex; /* brings the inner content side by side inplace of vertical*/
     margin-top: 10px; /* Leaves some space between container and the button at the top*/
+    padding: 10px;
+   
 }
 
 .folder {
@@ -20,10 +22,11 @@
     margin: 10px;
 }
 
-.folder [action]{
+.folder [action]{ /* for the action attribute inside folder div */
     text-decoration: underline;
 }
 
 div[purpose=name]{
     margin-top: 50px;
 }
+
