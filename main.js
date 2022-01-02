@@ -16,8 +16,8 @@
                 // Now folder we will add in 1)Folders 2) HTML 3) In storage of browser
                 //1)In folders
                 let folder={
-                     name: fname,
-                     id: fid
+                     id: fid,
+                     name: fname
                 }
                 folders.push(folder);
 
@@ -37,10 +37,46 @@
     }
 
     function editFolder(){
+        let divFolder=this.parentNode;// Here this is spanDelete whose parent is the divFolder
+        let divName=divFolder.querySelector("[purpose='name']");
+        let fidx=folders.findIndex(f => f.name == divName.innerHTML);
+        let oldFolderName=divName.innerHTML;
+        let newFolderName=prompt("Enter folder name");
+        if(!!newFolderName){
+            if(newFolderName!=divName.innerHTML){
+                let exists=folders.some(f => f.name==newFolderName); // see if new FolderName matches with already present foldernames
+                if(!exists){
+                    // Adding to RAM
+                    folders.splice(fidx, 1, {id:fid, name: newFolderName}); // folders.find(f=>f.name==oldFolderName).name==newFolderName 
+                    divName.innerHTML=newFolderName; // HTML
+                    saveToStorage(); // storage
+                }else{
+                    alert("Folder name already exists");
+                }
+
+            }else{
+                alert("Please enter new folder name");
+            }
+
+        }else{
+            alert("Enter a folder name");
+        }
+        
 
     }
 
     function deleteFolder(){
+
+        let divFolder=this.parentNode;// Here this is spanDelete whose parent is the divFolder
+        let divName=divFolder.querySelector("[purpose='name']");
+        let flag=confirm("Do you want to delete?"+ divName.innerHTML);
+        if(flag==true)
+        {
+            let fidx=folders.findIndex(f => f.name == divName.innerHTML);
+            folders.splice(fidx, 1); // removing the folder from array.
+            divContainer.removeChild(divFolder);
+            saveToStorage();
+        }
 
     }
 
@@ -63,8 +99,6 @@
 
         let fjson=JSON.stringify(folders);
         localStorage.setItem("data",fjson);
-
-
     }
 
     function loadFromStorage(){ // when page starts at the very beginning it checks if there is a already existing folder and if exists, it creates html page from it
