@@ -2,12 +2,13 @@
     let btnAddFolder=document.querySelector("#btnAddFolder");
     let divContainer=document.querySelector("#divContainer");
     let divBreadCrumb=document.querySelector("#divBreadCrumb");
+    let aRootPath=document.querySelector(".path");
     let pageTemplates=document.querySelector("#pageTemplates");
     let folders=[];
     let fid=-1; // initialise with -1, will keep updating it
     let cfid=-1; // -1 set for the root folder, id of folder where we are
     btnAddFolder.addEventListener("click", addFolder);
-
+    aRootPath.addEventListener("click", navigateBreadCrumb);
     function addFolder(){
 
         let fname=prompt("Enter folder name");
@@ -69,37 +70,61 @@
 
     }
 
-    function deleteFolder(){
+    function deleteFolder() {
+        let divFolder = this.parentNode;
+        let divName = divFolder.querySelector("[purpose='name']");
+        let fidtbd = parseInt(divFolder.getAttribute("fid"));// folder id to be deleted
 
-        let divFolder=this.parentNode;// Here this is spanDelete whose parent is the divFolder
-        let divName=divFolder.querySelector("[purpose='name']");
-        let flag=confirm("Do you want to delete?"+ divName.innerHTML);
-        if(flag==true)
-        {
-            let fidx=folders.findIndex(f => f.name == divName.innerHTML);
-            folders.splice(fidx, 1); // removing the folder from array.
-            divContainer.removeChild(divFolder);
-            saveToStorage();
+        let flag = confirm("Are you sure you want to delete " + divName.innerHTML + "?");
+        if (flag == true) {
+            let exists = folders.some(f => f.pid == fidtbd); // check if the folder you want to delete is some folder's parent or not, then you cant delete
+            if(exists == false){
+                // ram
+                let fidx = folders.findIndex(f => f.id == fidtbd);
+                folders.splice(fidx, 1);
+
+                // html
+                divContainer.removeChild(divFolder);
+
+                // storage
+                saveToStorage();
+            } else {
+                alert("Can't delete. Has children.");
+            }
         }
+    }
 
+    function navigateBreadCrumb(){
+        let fname = this.innerHTML;
+        cfid = parseInt(this.getAttribute("fid"));
+ 
+        divContainer.innerHTML = "";
+        folders.filter(f => f.pid == cfid).forEach(f => {
+            addFolderHtml(f.name, f.id, f.pid);
+        });
+
+        while(this.nextSibling){
+            this.parentNode.removeChild(this.nextSibling);
+        }
     }
 
     function viewFolder(){
+        let divFolder = this.parentNode;
+        let divName = divFolder.querySelector("[purpose='name']");
+        cfid = parseInt(divFolder.getAttribute("fid"));
 
-        let divFolder=this.parentNode;
-        let divName=divFolder.querySelector("[purpose='name']");
-        cfid=parseInt(divFolder.getAttribute("fid"));
+        let aPathTemplate = pageTemplates.content.querySelector(".path");
+        let aPath = document.importNode(aPathTemplate, true);
 
-        let aPathTemplate=pageTemplates.content.querySelector(".path"); // fetching the template for folder
-        let aPath=document.importNode(aPathTemplate, true); // cloning the folder template so that we can create folder
-        aPath.innerHTML=divName.innerHTML;
+        aPath.innerHTML = divName.innerHTML;
+        aPath.setAttribute("fid", cfid);
+        aPath.addEventListener("click", navigateBreadCrumb);
         divBreadCrumb.appendChild(aPath);
 
-        divContainer.innerHTML="";
-        folders.filter(f=>f.pid==cfid).forEach(f=>{
-            addFolderHtml(f.name, f.fid, f.pid);
-        })
-
+        divContainer.innerHTML = "";
+        folders.filter(f => f.pid == cfid).forEach(f => {
+            addFolderHtml(f.name, f.id, f.pid);
+        });
     }
 
     function addFolderHtml(fname, fid, pid){ // Adds HTML for each folder 1 at a time
@@ -137,6 +162,7 @@
                 addFolderHtml(f.name, f.id, f.pid);
                 if(f.id>fid)
                 fid=f.id;
+                
             })
         }
     }
