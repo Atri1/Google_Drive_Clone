@@ -1,10 +1,13 @@
 (function(){  //Created IIFE to prevent name space pollution. If your project has multiple files its good practise to use IIFE-->Immediately Invoked File Execution. Suppose we have 2 JS file main1.js, main2.js and we are connecting both to the HTML page and we are defining let a=5, let a=6 in the JS files respectively, then in same page we will have 2 'a' from the 2 JS and this might cause problem
     let btnAddFolder=document.querySelector("#btnAddFolder");
     let divContainer=document.querySelector("#divContainer");
+    let divBreadCrumb=document.querySelector("#divBreadCrumb");
     let pageTemplates=document.querySelector("#pageTemplates");
     let folders=[];
     let fid=-1; // initialise with -1, will keep updating it
+    let cfid=-1; // -1 set for the root folder, id of folder where we are
     btnAddFolder.addEventListener("click", addFolder);
+
     function addFolder(){
 
         let fname=prompt("Enter folder name");
@@ -17,12 +20,13 @@
                 //1)In folders
                 let folder={
                      id: fid,
-                     name: fname
+                     name: fname,
+                     pid: cfid  // cfid is cuurent folder id. Now when you add new folder, its parentId will be currrent folder id
                 }
                 folders.push(folder);
 
                 //2) In HTML through addFolderHtml function
-                addFolderHtml(fname, fid);
+                addFolderHtml(fname, fid, cfid);
 
                 //3) Save to storage of browser
                 saveToStorage();
@@ -44,7 +48,7 @@
         let newFolderName=prompt("Enter folder name");
         if(!!newFolderName){
             if(newFolderName!=divName.innerHTML){
-                let exists=folders.some(f => f.name==newFolderName); // see if new FolderName matches with already present foldernames
+                let exists=folders.filter(f=>f.pid==cfid).some(f => f.name==newFolderName); // see if new FolderName matches with already present foldernames
                 if(!exists){
                     // Adding to RAM
                     folders.splice(fidx, 1, {id:fid, name: newFolderName}); // folders.find(f=>f.name==oldFolderName).name==newFolderName 
@@ -80,18 +84,39 @@
 
     }
 
-    function addFolderHtml(fname, fid){ // Adds HTML for each folder 1 at a time
+    function viewFolder(){
+
+        let divFolder=this.parentNode;
+        let divName=divFolder.querySelector("[purpose='name']");
+        cfid=parseInt(divFolder.getAttribute("fid"));
+
+        let aPathTemplate=pageTemplates.content.querySelector(".path"); // fetching the template for folder
+        let aPath=document.importNode(aPathTemplate, true); // cloning the folder template so that we can create folder
+        aPath.innerHTML=divName.innerHTML;
+        divBreadCrumb.appendChild(aPath);
+
+        divContainer.innerHTML="";
+        folders.filter(f=>f.pid==cfid).forEach(f=>{
+            addFolderHtml(f.name, f.fid, f.pid);
+        })
+
+    }
+
+    function addFolderHtml(fname, fid, pid){ // Adds HTML for each folder 1 at a time
 
 
         let divFolderTemplate=pageTemplates.content.querySelector(".folder"); // fetching the template for folder
         let divFolder=document.importNode(divFolderTemplate, true); // cloning the folder template so that we can create folder
         let spanEdit=divFolder.querySelector("span[action='edit']");
         let spanDelete=divFolder.querySelector("span[action='delete']");
+        let spanView=divFolder.querySelector("span[action='view']");
         let divName=divFolder.querySelector("[purpose='name']");
         divFolder.setAttribute("fid", fid); // adding attribute fid to the divFolder
+        divFolder.setAttribute("pid", pid); 
         divName.innerHTML=fname; // setting the name with the one we are getting as parameter
         spanEdit.addEventListener("click",editFolder);
         spanDelete.addEventListener("click",deleteFolder);
+        spanView.addEventListener("click",viewFolder);
         divContainer.appendChild(divFolder); // adding the divFolder to the divContainer
     }
 
@@ -108,7 +133,8 @@
 
             folders=JSON.parse(fjson);
             folders.forEach(f=>{
-                addFolderHtml(f.name, f.id);
+                if(f.pid==cfid)   // if parentId equals current folder id then show the children of pfid
+                addFolderHtml(f.name, f.id, f.pid);
                 if(f.id>fid)
                 fid=f.id;
             })

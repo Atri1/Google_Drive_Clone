@@ -5,14 +5,19 @@
     </head>
     <body>
         <button id="btnAddFolder">Add Folder</button>
+        <div id="divBreadCrumb">
+            <a class="path">Root</a>
+        </div>
         <div id="divContainer"></div> 
 
         <template id="pageTemplates"> 
             <div class="folder"> 
                 <span action="edit">edit</span>  
                 <span action="delete">delete</span>
+                <span action="view">view</span>
                 <div purpose="name"></div>  
             </div>
+            <a class="path">Root</a>
         </template>
         <script type="text/javascript" src="main.js"></script>
     </body>

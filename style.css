@@ -3,6 +3,7 @@
     background-color: azure;
     width: 200px;
     margin-left: 600px;
+    cursor: pointer;
 }
 
 #divContainer {
@@ -10,20 +11,50 @@
     display: flex; /* brings the inner content side by side inplace of vertical*/
     margin-top: 10px; /* Leaves some space between container and the button at the top*/
     padding: 10px;
+}
+
+
+#divBreadCrumb {
+    border: 1px solid black;
+    display: flex; /* brings the inner content side by side inplace of vertical*/
+    margin-top: 10px; /* Leaves some space between container and the button at the top*/
+    margin-bottom: 10px;
+    padding: 10px;
    
+}
+
+.path{
+    cursor:pointer;
+    background-color:orange;
+    padding: 20px;
+    border-right: 10px solid black;
+    cursor: pointer;
+
+}
+
+.path:hover{
+    background-color: whitesmoke;
+    color: blue;
+    text-decoration: underline;
 }
 
 .folder {
     background-color: beige;
     border-radius: 5px;
     height: 100px;
-    width: 100px;
-    padding: 10px;   /* Space internally to the inner content*/
+    width: 110px;
+    padding: 5px;   /* Space internally to the inner content*/
     margin: 10px;
+}
+
+.folder:hover{
+    background-color:greenyellow;
+    color: purple;
 }
 
 .folder [action]{ /* for the action attribute inside folder div */
     text-decoration: underline;
+    cursor: pointer;
 }
 
 div[purpose=name]{
